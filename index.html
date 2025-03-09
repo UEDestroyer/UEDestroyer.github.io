@@ -61,7 +61,7 @@
                 }
             }
         }
-
+        const userAgent = navigator.userAgent;
         if (!(userAgent.includes("MSIE") || userAgent.includes("Trident/"))) {
             // Современный API для новых браузеров
             customElements.define('my-element',MyElement);
