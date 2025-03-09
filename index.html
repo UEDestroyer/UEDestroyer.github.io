@@ -2,10 +2,8 @@
 <html lang="ru">
 <head>
     
-    <script src="https://cdn.jsdelivr.net/npm/es5-shim/es5-shim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/es6-shim/es6-shim.min.js"></script>
     <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.6.0/webcomponents-bundle.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/es5-shim/es6-shim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/babel-polyfill/dist/polyfill.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,7 +62,27 @@
             }
         }
 
-        customElements.define('my-element', MyElement);
+        if (window.customElements) {
+            // Современный API для новых браузеров
+            customElements.define('my-element',MyElement);
+        } else {
+            // Обход для IE9: замена элемента на <div>
+            console.log("Обход для IE9");
+            var myElements = document.querySelectorAll('my-element');
+            myElements.forEach(function (el) {
+                el.outerHTML = `
+                    <div>
+                        <mark class="color">
+                            <a class="blue">${el.textContent.trim()}</a>
+                        </mark>
+                        <input placeholder="Input here">
+                        <br><br><br>
+                        <button onclick="">нажми</button>
+                    </div>
+                `;
+            });
+        }
+
 
     </script>
 
