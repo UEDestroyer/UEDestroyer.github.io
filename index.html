@@ -86,12 +86,12 @@
                 <div>
                     ${el.hasmark ? `<mark class="${el.getAttribute("classM") || ''}">` : ''}
                         <a class="${el.getAttribute('classT') || ''}">
-                            ${el.textContent.trim() || ''}
+                            lf
                         </a>
                     ${el.hasmark ? `</mark>` : ''}
-                    ${el.hasinput ? `<input class="${el.getAttribute("classI") || ''}" placeholder="${this.getAttribute("placeholder") || ''}">` : ''}
+                    ${el.hasinput ? `<input class="${el.getAttribute("classI") || ''}" placeholder="${el.getAttribute("placeholder") || ''}">` : ''}
                     ${el.brs}
-                    ${el.hasbut ? `<button class="${el.getAttribute("classB") || ''}" onclick="${this.getAttribute("command") || ''}">
+                    ${el.hasbut ? `<button class="${el.getAttribute("classB") || ''}" onclick="${el.getAttribute("command") || ''}">
                         ${el.getAttribute("buttonT") || el.getAttribute("buttonText") || "нажми"}
                     </button>` : ''}
                 </div>
