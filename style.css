@@ -1,0 +1,27 @@
+body{
+    font-family: Arial;
+}
+.blue{
+    color:blue;
+    font-size:small;
+}
+.mini{
+    font-size: large;
+}
+.black{
+    color:black;
+}
+.center{
+    text-align: center;
+}
+
+.ter {
+    text-align: center;
+}
+.color{
+    font-size: 25px;
+    background-color: coral;
+}
+.bukovki{
+    color:coral;
+}
