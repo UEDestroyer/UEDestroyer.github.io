@@ -62,26 +62,7 @@
             }
         }
 
-        if (window.customElements) {
-            // Современный API для новых браузеров
-            customElements.define('my-element',MyElement);
-        } else {
-            // Обход для IE9: замена элемента на <div>
-            console.log("Обход для IE9");
-            var myElements = document.querySelectorAll('my-element');
-            myElements.forEach(function (el) {
-                el.outerHTML = `
-                    <div>
-                        <mark class="color">
-                            <a class="blue">${el.textContent.trim()}</a>
-                        </mark>
-                        <input placeholder="Input here">
-                        <br><br><br>
-                        <button onclick="">нажми</button>
-                    </div>
-                `;
-            });
-        }
+        customElements.define('my-element', MyElement);
 
 
     </script>
