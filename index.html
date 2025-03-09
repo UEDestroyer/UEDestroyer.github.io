@@ -70,15 +70,31 @@
             console.log("Обход для IE9");
             var myElements = document.querySelectorAll('my-element');
             myElements.forEach(function (el) {
+                el.mark = el.getAttribute("mark") || '';
+                el.hasmark = el.mark === "true" || el.mark === "True" || el.mark === "1";
+
+                el.input = el.getAttribute("input") || '';
+                el.hasinput = el.input === "true" || el.input === "True" || el.input === "1";
+
+                el.br = Number(el.getAttribute("br")) || 0; // Преобразование строки в число
+                el.brs = el.setbrs(el.br); // Исправлено
+
+                el.but = el.getAttribute("but") || ''; // Исправлено
+                el.hasbut = el.but === "true" || el.but === "True" || el.but === "1";
+
                 el.outerHTML = `
-                    <div>
-                        <mark class="color">
-                            <a class="blue">${el.textContent.trim()}</a>
-                        </mark>
-                        <input placeholder="Input here">
-                        <br><br><br>
-                        <button onclick="">нажми</button>
-                    </div>
+                <div>
+                    ${el.hasmark ? `<mark class="${el.getAttribute("classM") || ''}">` : ''}
+                        <a class="${el.getAttribute('classT') || ''}">
+                            ${el.textContent.trim() || ''}
+                        </a>
+                    ${el.hasmark ? `</mark>` : ''}
+                    ${el.hasinput ? `<input class="${el.getAttribute("classI") || ''}" placeholder="${this.getAttribute("placeholder") || ''}">` : ''}
+                    ${el.brs}
+                    ${el.hasbut ? `<button class="${el.getAttribute("classB") || ''}" onclick="${this.getAttribute("command") || ''}">
+                        ${el.getAttribute("buttonT") || el.getAttribute("buttonText") || "нажми"}
+                    </button>` : ''}
+                </div>
                 `;
             });
         }
