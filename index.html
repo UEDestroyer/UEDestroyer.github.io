@@ -1,106 +1,15 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    
-    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@2.6.0/webcomponents-bundle.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/es5-shim/es6-shim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/babel-polyfill/dist/polyfill.min.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel='stylesheet' type='text/css' media='screen' href='style.css'>
-    <title>Рубрикаа эксперименты</title>
-</head>
-<body>
-
-    <my-element classM="color" classT="blue" input="1" mark="1" but="1" br="3" buttonT="">че</my-element>
-    <script>
-        class MyElement extends HTMLElement {
-            constructor() {
-                super();
-            }
-
-            connectedCallback() {
-                // Установка атрибутов и логики
-                this.mark = this.getAttribute("mark") || '';
-                this.hasmark = this.mark === "true" || this.mark === "True" || this.mark === "1";
-
-                this.input = this.getAttribute("input") || '';
-                this.hasinput = this.input === "true" || this.input === "True" || this.input === "1";
-
-                this.br = Number(this.getAttribute("br")) || 0; // Преобразование строки в число
-                this.brs = this.setbrs(this.br); // Исправлено
-
-                this.but = this.getAttribute("but") || ''; // Исправлено
-                this.hasbut = this.but === "true" || this.but === "True" || this.but === "1";
-
-                this.innerHTML = `
-                    ${this.hasmark ? `<mark class="${this.getAttribute("classM") || ''}">` : ''}
-                        <a class="${this.getAttribute('classT') || ''}">
-                            ${this.textContent.trim() || ''}
-                        </a>
-                    ${this.hasmark ? `</mark>` : ''}
-                    ${this.hasinput ? `<input class="${this.getAttribute("classI") || ''}" placeholder="${this.getAttribute("placeholder") || ''}">` : ''}
-                    ${this.brs}
-                    ${this.hasbut ? `<button class="${this.getAttribute("classB") || ''}" onclick="${this.getAttribute("command") || ''}">
-                        ${this.getAttribute("buttonT") || this.getAttribute("buttonText") || "нажми"}
-                    </button>` : ''}
-                `;
-            }
-
-            setbrs(br) {
-                if (br === "true" || br === "True") {
-                    return "<br>";
-                } else if (typeof br === "number" && br > 0) {
-                    let brss = "";
-                    for (let i = 0; i < br; i++) {
-                        brss += "<br>";
-                    }
-                    return brss;
-                } else {
-                    return "";
-                }
-            }
-        }
-
-        if (!(document.all && !window.atob)) {
-            // Современный API для новых браузеров
-            customElements.define('my-element',MyElement);
-        } else {
-            // Обход для IE9: замена элемента на <div>
-            console.log("Обход для IE9");
-            var myElements = document.querySelectorAll('my-element');
-            myElements.forEach(function (el) {
-                el.mark = el.getAttribute("mark") || '';
-                el.hasmark = el.mark === "true" || el.mark === "True" || el.mark === "1";
-
-                el.input = el.getAttribute("input") || '';
-                el.hasinput = el.input === "true" || el.input === "True" || el.input === "1";
-
-                el.br = Number(el.getAttribute("br")) || 0; // Преобразование строки в число
-                el.brs = el.setbrs(el.br); // Исправлено
-
-                el.but = el.getAttribute("but") || ''; // Исправлено
-                el.hasbut = el.but === "true" || el.but === "True" || el.but === "1";
-
-                el.outerHTML = `
-                <div>
-                    ${el.hasmark ? `<mark class="${el.getAttribute("classM") || ''}">` : ''}
-                        <a class="${el.getAttribute('classT') || ''}">
-                            lf
-                        </a>
-                    ${el.hasmark ? `</mark>` : ''}
-                    ${el.hasinput ? `<input class="${el.getAttribute("classI") || ''}" placeholder="${el.getAttribute("placeholder") || ''}">` : ''}
-                    ${el.brs}
-                    ${el.hasbut ? `<button class="${el.getAttribute("classB") || ''}" onclick="${el.getAttribute("command") || ''}">
-                        ${el.getAttribute("buttonT") || el.getAttribute("buttonText") || "нажми"}
-                    </button>` : ''}
-                </div>
-                `;
-            });
-        }
-
-
-    </script>
-
-</body>
+<html>
+    <head>
+        <title>dsfi</title>
+        <link href="style.css" rel="stylesheet">
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <my-elem s="fInp" onclick="addbut()">tusa</my-elem><br><br>
+        <p>удалить</p><my-elem s="idInp" onclick="removeTrack()">Удалить</my-elem><br>
+        <button onclick="playMusic()">Играть</button><br>
+        <button onclick="pauseMusic()">Выкл</button><br>
+        <button onclick="playNext()">след</button><br>
+    </body>
+    <script src="scr.js"></script>
 </html>
