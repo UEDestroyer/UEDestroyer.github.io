@@ -1,5 +1,8 @@
 const obj = document.getElementById("asd");
 const inp = document.getElementById("fInp");
+const button = document.getElementById("addBut");
+const delbut=document.getElementById("delBut")
+
 let audios = [];
 let currentIndex = 0;
 
@@ -9,8 +12,8 @@ window.onload = loadPlaylist;
 let elements = document.getElementsByTagName("my-elem");
 
 function connectedCallback(a) {
-    a.innerHTML = `<input id="${a.getAttribute("s")}">
-                   <button onclick="${a.getAttribute("onclick")}">${a.innerText}</button>`;
+    a.innerHTML = `<input id="${a.getAttribute("iID")}" type="${a.getAttribute("type")}">
+                   <button onclick="${a.getAttribute("command")}" id="${a.getAttribute("bId")}">${a.innerText}</button>`;
 }
 
 Array.from(elements).forEach(b => {
@@ -58,6 +61,18 @@ function playNext() {
         playMusic();
     }
 }
+function playBef(){
+    pauseMusic();
+    if (currentIndex - 1 >-1) {
+        currentIndex--;
+        audios[currentIndex].play()
+            .then(() => console.log("Пред трек:", audios[currentIndex].src))
+            .catch(err => console.error("Ошибка воспроизведения следующего трека:", err));
+    } else {
+        currentIndex=audios.length-1;
+        playNext();
+    }
+}
 
 function pauseMusic() {
     if (audios.length > 0) {
@@ -88,7 +103,7 @@ function loadPlaylist() {
 let index;
 function removeTrack() {
     let a = document.getElementById("idInp");
-    index=a.value;
+    index=a.value-1;
     if (index >= 0 && index < audios.length) {
         console.log("Удаляем:", audios[index].src);
         audios.splice(index, 1);
@@ -111,3 +126,37 @@ function downloadPlaylist() {
 }
 // Кнопка для скачивания списка
 document.body.insertAdjacentHTML("beforeend", `<button onclick="downloadPlaylist()">Скачать плейлист</button>`);
+
+// const http = require("http");
+
+// // Создание HTTP-сервера
+// const server = http.createServer((req, res) => {
+//     if (req.method === "GET" && req.url.startsWith("/process")) {
+//         // Разбираем параметры из URL
+//         const url = new URL(req.url, `http://${req.headers.host}`);
+//         const id = url.searchParams.get("id");
+
+//         if (id) {
+//             try {
+//                 const result = Number(id + "13") * 5; // Выполняем вычисление
+//                 res.writeHead(200, { "Content-Type": "application/json" });
+//                 res.end(JSON.stringify({ result })); // Возвращаем результат клиенту
+//             } catch (error) {
+//                 res.writeHead(400, { "Content-Type": "application/json" });
+//                 res.end(JSON.stringify({ error: "Некорректный параметр id. Ожидается число." }));
+//             }
+//         } else {
+//             res.writeHead(400, { "Content-Type": "application/json" });
+//             res.end(JSON.stringify({ error: "Параметр id отсутствует в запросе." }));
+//         }
+//     } else {
+//         res.writeHead(404, { "Content-Type": "text/plain" });
+//         res.end("Ресурс не найден");
+//     }
+// });
+
+// // Запуск сервера
+// const PORT = 3000;
+// server.listen(PORT, () => {
+//     console.log(`Сервер запущен на http://localhost:${PORT}`);
+// });

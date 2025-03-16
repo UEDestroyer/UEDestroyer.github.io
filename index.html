@@ -5,11 +5,12 @@
         <meta charset="UTF-8">
     </head>
     <body>
-        <my-elem s="fInp" onclick="addbut()">tusa</my-elem><br><br>
-        <p>удалить</p><my-elem s="idInp" onclick="removeTrack()">Удалить</my-elem><br>
+        <my-elem iId="fInp" bId="addBut" command="addbut()">tusa</my-elem><br><br>
+        <my-elem iId="idInp" type="Number" bId="delBut" command="removeTrack()">Удалить</my-elem><br>
         <button onclick="playMusic()">Играть</button><br>
         <button onclick="pauseMusic()">Выкл</button><br>
-        <button onclick="playNext()">след</button><br>
+        <button onclick="playNext()">след</button><p>    </p>
+        <button onclick="playBef()">пред</button><br>
     </body>
     <script src="scr.js"></script>
 </html>
