@@ -2,23 +2,38 @@ window.onload = function () {
     let elements = document.getElementsByTagName("my-elem");
     Array.from(elements).forEach(b => connectedCallback(b));
 
-    loadPlaylist(); // Загружаем плейлист
+    let storedUser = localStorage.getItem("username");
+    if (storedUser) {
+        document.getElementById("username").value = storedUser;
+        loadPlaylist(storedUser);
+    }
 };
 
 // Найдем элементы
-const obj = document.getElementById("asd");
 const inp = document.getElementById("fInp");
-const button = document.getElementById("addBut");
 const delbut = document.getElementById("delBut");
 
 let audios = [];
 let currentIndex = 0;
+let username = "";
+
+// Установка имени пользователя
+function setUsername() {
+    let input = document.getElementById("username").value.trim();
+    if (input) {
+        username = input;
+        localStorage.setItem("username", username);
+        loadPlaylist(username);
+        console.log("Имя пользователя установлено:", username);
+    } else {
+        console.warn("Введите корректное имя!");
+    }
+}
 
 // Функция инициализации кастомных элементов
 function connectedCallback(a) {
     let inputId = a.getAttribute("iID") || "";
     let inputType = a.getAttribute("type") || "text";
-    let command = a.getAttribute("command") || "";
     let buttonId = a.getAttribute("bId") || "";
 
     a.innerHTML = `
@@ -29,21 +44,18 @@ function connectedCallback(a) {
     let buttonElem = document.getElementById(buttonId);
     if (buttonElem) {
         buttonElem.addEventListener("click", function () {
-            try {
-                eval(command);
-            } catch (e) {
-                console.error("Ошибка выполнения команды:", e);
+            if (!username) {
+                console.warn("Сначала установите имя пользователя!");
+                return;
             }
+            if (buttonId === "addBut") addTrack();
+            if (buttonId === "delBut") removeTrack();
         });
     }
 }
 
-// Обновление кастомных элементов после загрузки
-let elements = document.getElementsByTagName("my-elem");
-Array.from(elements).forEach(b => connectedCallback(b));
-
 // Добавление трека
-function addbut() {
+function addTrack() {
     let inp = document.getElementById("fInp");
     if (!inp) {
         console.error("Элемент с id='fInp' не найден!");
@@ -53,7 +65,7 @@ function addbut() {
         let newAudio = new Audio(inp.value);
         newAudio.addEventListener("ended", playNext);
         audios.push(newAudio);
-        savePlaylist();
+        savePlaylist(username);
         console.log("Добавлено:", inp.value);
     } else {
         console.warn("Введите ссылку на MP3!");
@@ -72,11 +84,11 @@ function playMusic() {
     }
 }
 
-// Продолжить воспроизведение текущего трека
+// Продолжить воспроизведение
 function continMus() {
     if (audios.length > 0) {
         audios[currentIndex].play()
-            .then(() => console.log("Воспроизведение начато:", audios[currentIndex].src))
+            .then(() => console.log("Воспроизведение продолжается:", audios[currentIndex].src))
             .catch(err => console.error("Ошибка воспроизведения:", err));
     }
 }
@@ -87,7 +99,7 @@ function playNext() {
     if (currentIndex + 1 < audios.length) {
         currentIndex++;
     } else {
-        currentIndex = 0; // Зацикливаем плейлист
+        currentIndex = 0;
     }
     continMus();
 }
@@ -112,14 +124,15 @@ function pauseMusic() {
 }
 
 // Сохранение плейлиста
-function savePlaylist() {
+function savePlaylist(user) {
     let playlist = audios.map(audio => audio.src);
-    localStorage.setItem("playlist", JSON.stringify(playlist));
+    localStorage.setItem(`playlist_${user}`, JSON.stringify(playlist));
 }
 
 // Загрузка плейлиста
-function loadPlaylist() {
-    let savedPlaylist = localStorage.getItem("playlist");
+function loadPlaylist(user) {
+    let savedPlaylist = localStorage.getItem(`playlist_${user}`);
+    audios = [];
     if (savedPlaylist) {
         let urls = JSON.parse(savedPlaylist);
         urls.forEach(url => {
@@ -127,7 +140,9 @@ function loadPlaylist() {
             newAudio.addEventListener("ended", playNext);
             audios.push(newAudio);
         });
-        console.log("Плейлист загружен:", urls);
+        console.log("Плейлист загружен для:", user);
+    } else {
+        console.warn("Нет сохраненного плейлиста для:", user);
     }
 }
 
@@ -139,68 +154,15 @@ function removeTrack() {
     if (!isNaN(index) && index >= 0 && index < audios.length) {
         console.log("Удаляем:", audios[index].src);
         audios.splice(index, 1);
-        savePlaylist();
+        savePlaylist(username);
     } else {
         console.warn("Некорректный индекс!");
     }
 }
 
-// Скачивание плейлиста в файл
-function downloadPlaylist() {
-    let text = audios.map(audio => audio.src).join("\n");
-    let blob = new Blob([text], { type: "text/plain" });
-    let a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "playlist.txt";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+// Очистка плейлиста
+function clearPlaylist() {
+    audios = [];
+    localStorage.removeItem(`playlist_${username}`);
+    console.log("Плейлист очищен для:", username);
 }
-// Функция загрузки плейлистаиз .txtфайла
-function uploadPlaylist(event) {
-    let file = event.target.files[0];
-    if (!file) return;
-
-    let reader = new FileReader();
-    reader.onload = function(e) {
-        let urls = e.target.result.split("\n").map(url => url.trim()).filter(url => url);
-        
-        audios = []; // Очищаем текущий плейлист
-        urls.forEach(url => {
-            let newAudio = new Audio(url);
-            newAudio.addEventListener("ended", playNext);
-            audios.push(newAudio);
-        });
-
-        savePlaylist(); // Сохраняем в localStorage
-        console.log("Плейлист загружен из файла:", urls);
-    };
-
-    reader.readAsText(file);
-}
-
-// Добавление кнопки загрузки фай
-
-document.getElementById("uploadFile").addEventListener("change", uploadPlaylist);
-
-// Добавление кнопки скачивания плейлиста
-document.body.insertAdjacentHTML("beforeend", `<button onclick="downloadPlaylist()">Скачать плейлист</button>`);
-
-// Логгер для вывода в HTML
-(function () {
-    let logContainer = document.createElement("pre");
-    document.body.appendChild(logContainer);
-
-    let oldLog = console.log;
-    let oldError = console.error;
-
-    console.log = function (...args) {
-        oldLog.apply(console, args);
-        logContainer.innerHTML += args.map(a => JSON.stringify(a, null, 2)).join(" ") + "\n";
-    };
-
-    console.error = function (...args) {
-        oldError.apply(console, args);
-        logContainer.innerHTML += "[Ошибка] " + args.map(a => JSON.stringify(a, null, 2)).join(" ") + "\n";
-    };
-})();
