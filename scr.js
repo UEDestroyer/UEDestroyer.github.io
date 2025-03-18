@@ -8,8 +8,10 @@ let currentIndex = 0;
 
 // Загружаем сохраненный плейлист при запуске
 window.onload = loadPlaylist;
-
-let elements = document.getElementsByTagName("my-elem");
+let elements=document.getElementsByTagName("my-elem");
+Array.from(elements).forEach(b => {
+    connectedCallback(b);
+});
 
 function connectedCallback(a) {
     a.innerHTML = `<input id="${a.getAttribute("iID")}" type="${a.getAttribute("type")}">
@@ -129,7 +131,7 @@ function downloadPlaylist() {
 }
 // Кнопка для скачивания списка
 document.body.insertAdjacentHTML("beforeend", `<button onclick="downloadPlaylist()">Скачать плейлист</button>`);
-
+elements=document.getElementsByTagName("my-elem");
 Array.from(elements).forEach(b => {
     connectedCallback(b);
 });
