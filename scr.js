@@ -54,38 +54,31 @@ function pauseMusic() {
     }
 }
 
-// Сохранение плейлиста на сервер
-function savePlaylist() {
-    if (!username) {
-        console.warn("Сначала введите ник!");
-        return;
-    }
-    let playlist = audios.map(audio => audio.src);
-    fetch("http://localhost:3000/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, playlist })
+const API_KEY = "$2a$10$0GmpdTEqd2ZaL6MGAdaZluaqaGoVgHAiKixWXMAig0J6pQXHSIdVa";
+const BIN_ID = "67d9a2bfce7767792747b9c9";
+
+async function savePlaylist() {
+    fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": API_KEY
+        },
+        body: JSON.stringify({ tracks: audios.map(a => a.src) })
     })
     .then(res => res.json())
     .then(data => console.log("Сохранено:", data))
     .catch(err => console.error("Ошибка сохранения:", err));
 }
 
-// Загрузка плейлиста с сервера
-function loadPlaylist() {
-    if (!username) return;
-    fetch(`http://localhost:3000/load?username=${username}`)
-        .then(res => res.json())
-        .then(data => {
-            audios = [];
-            if (data.playlist) {
-                data.playlist.forEach(url => {
-                    let newAudio = new Audio(url);
-                    newAudio.addEventListener("ended", playNext);
-                    audios.push(newAudio);
-                });
-                console.log("Плейлист загружен:", data.playlist);
-            }
-        })
-        .catch(err => console.error("Ошибка загрузки:", err));
+async function loadPlaylist() {
+    fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { "X-Master-Key": API_KEY }
+    })
+    .then(res => res.json())
+    .then(data => {
+        audios = data.record.tracks.map(url => new Audio(url));
+        console.log("Плейлист загружен:", audios);
+    })
+    .catch(err => console.error("Ошибка загрузки:", err));
 }
