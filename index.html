@@ -11,6 +11,14 @@
     <button onclick="setUsername()">Установить</button>
     <br><br>
 
+    <label for="playlistSelect">Выберите плейлист:</label>
+    <select id="playlistSelect" onchange="changePlaylist()">
+        <option value="Main">Main</option>
+    </select>
+    <button onclick="createPlaylist()">Создать новый</button>
+    <button onclick="deletePlaylist()">Удалить выбранный</button>
+    <br><br>
+
     <my-elem iId="fInp" bId="addBut">Добавить трек</my-elem><br><br>
     <my-elem iId="idInp" type="number" bId="delBut">Удалить трек</my-elem><br><br>
 
