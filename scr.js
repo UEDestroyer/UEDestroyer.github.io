@@ -1,3 +1,9 @@
+window.onload = function () {
+    let elements = document.getElementsByTagName("my-elem");
+    Array.from(elements).forEach(b => {
+        connectedCallback(b);
+    });
+};
 const obj = document.getElementById("asd");
 const inp = document.getElementById("fInp");
 const button = document.getElementById("addBut");
