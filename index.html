@@ -1,18 +1,26 @@
-<html>
-    <head>
-        <title>dsfi</title>
-        <link href="style.css" rel="stylesheet">
-        <meta charset="UTF-8">
-    </head>
-    <body>
-        <my-elem iId="fInp" bId="addBut" command="addbut()">tusa</my-elem><br><br>
-        <my-elem iId="idInp" type="Number" bId="delBut" command="removeTrack()">Удалить</my-elem><br>
-        <button onclick="playMusic()">Играть</button><br>
-        <button onclick="continMus()">Продолжить</button><br>
-        <button onclick="pauseMusic()">Выкл</button><br>
-        <button onclick="playNext()">след</button><p>    </p>
-        <button onclick="playBef()">пред</button><br>
-        <my-elem iId="uploadFile" type="file" bId="loadBut" command="uploadPlaylist(event)">Загрузить плейлист</my-elem>
-    </body>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>MP3 Плеер</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <label for="username">Введите имя пользователя:</label>
+    <input type="text" id="username">
+    <button onclick="setUsername()">Установить</button>
+    <br><br>
+
+    <my-elem iId="fInp" bId="addBut">Добавить трек</my-elem><br><br>
+    <my-elem iId="idInp" type="number" bId="delBut">Удалить трек</my-elem><br><br>
+
+    <button onclick="playMusic()">Играть</button>
+    <button onclick="continMus()">Продолжить</button>
+    <button onclick="pauseMusic()">Пауза</button>
+    <button onclick="playNext()">Следующий</button>
+    <button onclick="playBef()">Предыдущий</button>
+    <button onclick="clearPlaylist()">Очистить плейлист</button>
+
     <script src="scr.js"></script>
+</body>
 </html>
