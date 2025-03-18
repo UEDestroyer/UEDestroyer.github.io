@@ -156,6 +156,32 @@ function downloadPlaylist() {
     a.click();
     document.body.removeChild(a);
 }
+// Функция загрузки плейлистаиз .txtфайла
+function uploadPlaylist(event) {
+    let file = event.target.files[0];
+    if (!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        let urls = e.target.result.split("\n").map(url => url.trim()).filter(url => url);
+        
+        audios = []; // Очищаем текущий плейлист
+        urls.forEach(url => {
+            let newAudio = new Audio(url);
+            newAudio.addEventListener("ended", playNext);
+            audios.push(newAudio);
+        });
+
+        savePlaylist(); // Сохраняем в localStorage
+        console.log("Плейлист загружен из файла:", urls);
+    };
+
+    reader.readAsText(file);
+}
+
+// Добавление кнопки загрузки фай
+
+document.getElementById("uploadFile").addEventListener("change", uploadPlaylist);
 
 // Добавление кнопки скачивания плейлиста
 document.body.insertAdjacentHTML("beforeend", `<button onclick="downloadPlaylist()">Скачать плейлист</button>`);
