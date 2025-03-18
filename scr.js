@@ -49,27 +49,30 @@ function playMusic() {
         console.warn("Нет аудиофайлов!");
     }
 }
+function continMus(){
+    audios[currentIndex].play()
+            .then(() => console.log("Воспроизведение начато:", audios[currentIndex].src))
+            .catch(err => console.error("Ошибка воспроизведения:", err));}
 
 function playNext() {
     pauseMusic();
     if (currentIndex + 1 < audios.length) {
         currentIndex++;
-        audios[currentIndex].play()
             .then(() => console.log("Следующий трек:", audios[currentIndex].src))
             .catch(err => console.error("Ошибка воспроизведения следующего трека:", err));
-    } else {
-        playMusic();
     }
+    else {
+        playMusic();return;
+    }
+    continMus();
 }
 function playBef(){
     pauseMusic();
     if (currentIndex - 1 >-1) {
         currentIndex--;
-        audios[currentIndex].play()
-            .then(() => console.log("Пред трек:", audios[currentIndex].src))
-            .catch(err => console.error("Ошибка воспроизведения следующего трека:", err));
+        continMus();
     } else {
-        currentIndex=audios.length-1;
+        currentIndex=audios.length-2;
         playNext();
     }
 }
