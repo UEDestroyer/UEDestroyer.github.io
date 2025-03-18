@@ -1,36 +1,50 @@
 window.onload = function () {
     let elements = document.getElementsByTagName("my-elem");
-    Array.from(elements).forEach(b => {
-        connectedCallback(b);
-    });
+    Array.from(elements).forEach(b => connectedCallback(b));
+
+    loadPlaylist(); // Загружаем плейлист
 };
+
+// Найдем элементы
 const obj = document.getElementById("asd");
 const inp = document.getElementById("fInp");
 const button = document.getElementById("addBut");
-const delbut=document.getElementById("delBut")
+const delbut = document.getElementById("delBut");
 
 let audios = [];
 let currentIndex = 0;
 
-// Загружаем сохраненный плейлист при запуске
-window.onload = loadPlaylist;
-let elements=document.getElementsByTagName("my-elem");
-Array.from(elements).forEach(b => {
-    connectedCallback(b);
-});
-
+// Функция инициализации кастомных элементов
 function connectedCallback(a) {
-    a.innerHTML = `<input id="${a.getAttribute("iID")}" type="${a.getAttribute("type")}">
-                   <button onclick="${a.getAttribute("command")}" id="${a.getAttribute("bId")}">${a.innerText}</button>`;
+    let inputId = a.getAttribute("iID") || "";
+    let inputType = a.getAttribute("type") || "text";
+    let command = a.getAttribute("command") || "";
+    let buttonId = a.getAttribute("bId") || "";
+
+    a.innerHTML = `
+        <input id="${inputId}" type="${inputType}">
+        <button id="${buttonId}">${a.innerText}</button>
+    `;
+
+    let buttonElem = document.getElementById(buttonId);
+    if (buttonElem) {
+        buttonElem.addEventListener("click", function () {
+            try {
+                eval(command);
+            } catch (e) {
+                console.error("Ошибка выполнения команды:", e);
+            }
+        });
+    }
 }
 
-Array.from(elements).forEach(b => {
-    connectedCallback(b);
-});
+// Обновление кастомных элементов после загрузки
+let elements = document.getElementsByTagName("my-elem");
+Array.from(elements).forEach(b => connectedCallback(b));
 
-
+// Добавление трека
 function addbut() {
-    let inp = document.getElementById("fInp"); // Убедимся, что мы берём актуальный элемент
+    let inp = document.getElementById("fInp");
     if (!inp) {
         console.error("Элемент с id='fInp' не найден!");
         return;
@@ -46,7 +60,7 @@ function addbut() {
     }
 }
 
-
+// Воспроизведение музыки
 function playMusic() {
     if (audios.length > 0) {
         currentIndex = 0;
@@ -57,34 +71,39 @@ function playMusic() {
         console.warn("Нет аудиофайлов!");
     }
 }
-function continMus(){
-    audios[currentIndex].play()
-            .then(() => console.log("Воспроизведение начато:", audios[currentIndex].src))
-            .catch(err => console.error("Ошибка воспроизведения:", err));}
 
+// Продолжить воспроизведение текущего трека
+function continMus() {
+    if (audios.length > 0) {
+        audios[currentIndex].play()
+            .then(() => console.log("Воспроизведение начато:", audios[currentIndex].src))
+            .catch(err => console.error("Ошибка воспроизведения:", err));
+    }
+}
+
+// Воспроизведение следующего трека
 function playNext() {
     pauseMusic();
     if (currentIndex + 1 < audios.length) {
         currentIndex++;
-            .then(() => console.log("Следующий трек:", audios[currentIndex].src))
-            .catch(err => console.error("Ошибка воспроизведения следующего трека:", err));
-    }
-    else {
-        playMusic();return;
+    } else {
+        currentIndex = 0; // Зацикливаем плейлист
     }
     continMus();
 }
-function playBef(){
+
+// Воспроизведение предыдущего трека
+function playBef() {
     pauseMusic();
-    if (currentIndex - 1 >-1) {
+    if (currentIndex > 0) {
         currentIndex--;
-        continMus();
     } else {
-        currentIndex=audios.length-2;
-        playNext();
+        currentIndex = audios.length - 1;
     }
+    continMus();
 }
 
+// Пауза
 function pauseMusic() {
     if (audios.length > 0) {
         audios[currentIndex].pause();
@@ -92,13 +111,13 @@ function pauseMusic() {
     }
 }
 
-// Функция сохранения плейлиста в localStorage и файл
+// Сохранение плейлиста
 function savePlaylist() {
     let playlist = audios.map(audio => audio.src);
     localStorage.setItem("playlist", JSON.stringify(playlist));
 }
 
-// Функция загрузки плейлиста
+// Загрузка плейлиста
 function loadPlaylist() {
     let savedPlaylist = localStorage.getItem("playlist");
     if (savedPlaylist) {
@@ -111,20 +130,22 @@ function loadPlaylist() {
         console.log("Плейлист загружен:", urls);
     }
 }
-let index;
+
+// Удаление трека по индексу
 function removeTrack() {
     let a = document.getElementById("idInp");
-    index=a.value-1;
-    if (index >= 0 && index < audios.length) {
+    let index = parseInt(a.value, 10) - 1;
+
+    if (!isNaN(index) && index >= 0 && index < audios.length) {
         console.log("Удаляем:", audios[index].src);
         audios.splice(index, 1);
-        savePlaylist(); // Обновляем плейлист в localStorage
+        savePlaylist();
     } else {
         console.warn("Некорректный индекс!");
     }
 }
 
-// Функция скачивания плейлиста в .txt файл
+// Скачивание плейлиста в файл
 function downloadPlaylist() {
     let text = audios.map(audio => audio.src).join("\n");
     let blob = new Blob([text], { type: "text/plain" });
@@ -135,55 +156,25 @@ function downloadPlaylist() {
     a.click();
     document.body.removeChild(a);
 }
-// Кнопка для скачивания списка
+
+// Добавление кнопки скачивания плейлиста
 document.body.insertAdjacentHTML("beforeend", `<button onclick="downloadPlaylist()">Скачать плейлист</button>`);
-elements=document.getElementsByTagName("my-elem");
-Array.from(elements).forEach(b => {
-    connectedCallback(b);
-});
 
-// const http = require("http");
-
-// // Создание HTTP-сервера
-// const server = http.createServer((req, res) => {
-//     if (req.method === "GET" && req.url.startsWith("/process")) {
-//         // Разбираем параметры из URL
-//         const url = new URL(req.url, `http://${req.headers.host}`);
-//         const id = url.searchParams.get("id");
-
-//         if (id) {
-//             try {
-//                 const result = Number(id + "13") * 5; // Выполняем вычисление
-//                 res.writeHead(200, { "Content-Type": "application/json" });
-//                 res.end(JSON.stringify({ result })); // Возвращаем результат клиенту
-//             } catch (error) {
-//                 res.writeHead(400, { "Content-Type": "application/json" });
-//                 res.end(JSON.stringify({ error: "Некорректный параметр id. Ожидается число." }));
-//             }
-//         } else {
-//             res.writeHead(400, { "Content-Type": "application/json" });
-//             res.end(JSON.stringify({ error: "Параметр id отсутствует в запросе." }));
-//         }
-//     } else {
-//         res.writeHead(404, { "Content-Type": "text/plain" });
-//         res.end("Ресурс не найден");
-//     }
-// });
-
-// // Запуск сервера
-// const PORT = 3000;
-// server.listen(PORT, () => {
-//     console.log(`Сервер запущен на http://localhost:${PORT}`);
-// });
-(function() {
+// Логгер для вывода в HTML
+(function () {
     let logContainer = document.createElement("pre");
     document.body.appendChild(logContainer);
 
     let oldLog = console.log;
-    console.log = function(...args) {
-        oldLog.apply(console, args); // Вывод в обычную консоль
+    let oldError = console.error;
+
+    console.log = function (...args) {
+        oldLog.apply(console, args);
         logContainer.innerHTML += args.map(a => JSON.stringify(a, null, 2)).join(" ") + "\n";
     };
 
-    console.error = console.log; // Перехватываем ошибки
+    console.error = function (...args) {
+        oldError.apply(console, args);
+        logContainer.innerHTML += "[Ошибка] " + args.map(a => JSON.stringify(a, null, 2)).join(" ") + "\n";
+    };
 })();
