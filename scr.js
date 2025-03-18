@@ -20,8 +20,8 @@ let username = "";
 let playlists = {};
 let currentPlaylist = "Main";
 
-const API_KEY = "ТВОЙ_КЛЮЧ";
-const BIN_ID = "ТВОЙ_BIN_ID";
+const API_KEY = "$2a$10$0GmpdTEqd2ZaL6MGAdaZluaqaGoVgHAiKixWXMAig0J6pQXHSIdVa";
+const BIN_ID = "67d9a2bfce7767792747b9c9";
 
 function connectedCallback(a) {
     let inputId = a.getAttribute("iID") || "";
