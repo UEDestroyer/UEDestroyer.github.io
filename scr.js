@@ -175,3 +175,4 @@ Array.from(elements).forEach(b => {
 // server.listen(PORT, () => {
 //     console.log(`Сервер запущен на http://localhost:${PORT}`);
 // });
+document.body.innerHTML += `<pre>${JSON.stringify(console.log, null, 2)}</pre>`;
