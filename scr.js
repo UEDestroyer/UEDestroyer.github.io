@@ -175,4 +175,15 @@ Array.from(elements).forEach(b => {
 // server.listen(PORT, () => {
 //     console.log(`Сервер запущен на http://localhost:${PORT}`);
 // });
-document.body.innerHTML += `<pre>${JSON.stringify(console.log, null, 2)}</pre>`;
+(function() {
+    let logContainer = document.createElement("pre");
+    document.body.appendChild(logContainer);
+
+    let oldLog = console.log;
+    console.log = function(...args) {
+        oldLog.apply(console, args); // Вывод в обычную консоль
+        logContainer.innerHTML += args.map(a => JSON.stringify(a, null, 2)).join(" ") + "\n";
+    };
+
+    console.error = console.log; // Перехватываем ошибки
+})();
