@@ -130,6 +130,10 @@ function downloadPlaylist() {
 // Кнопка для скачивания списка
 document.body.insertAdjacentHTML("beforeend", `<button onclick="downloadPlaylist()">Скачать плейлист</button>`);
 
+Array.from(elements).forEach(b => {
+    connectedCallback(b);
+});
+
 // const http = require("http");
 
 // // Создание HTTP-сервера
