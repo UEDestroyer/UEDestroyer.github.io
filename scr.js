@@ -175,10 +175,18 @@ function updatePlaylistSelect() {
 
 // Сохранение всех плейлистов пользователя
 async function saveAllPlaylists() {
-    if (!username) return console.warn("Сначала введите ник!");
+    if (!username) {
+        console.warn("Сначала введите ник!");
+        return;
+    }
 
     let allPlaylists = await loadAllPlaylists();
-    allPlaylists[username] = playlists;
+    
+    if (!allPlaylists || typeof allPlaylists !== "object") {
+        allPlaylists = {}; // Создаем новый объект, если данные отсутствуют или повреждены
+    }
+
+    allPlaylists[username] = playlists; // Обновляем только данные текущего пользователя
 
     fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: "PUT",
