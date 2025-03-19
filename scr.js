@@ -1,5 +1,31 @@
-let savePlay
+async function searchMP3(songTitle) {
+    const searchUrl = `https://duckduckgo.com/html/?q=${encodeURIComponent(songTitle + " mp3 download")}`;
 
+    try {
+        const response = await fetch(searchUrl);
+        const html = await response.text();
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        const firstLink = doc.querySelector(".result__url"); // Ищем первую ссылку
+
+        return firstLink ? firstLink.textContent.trim() : null;
+    } catch (error) {
+        console.error("Ошибка поиска MP3:", error);
+        return null;
+    }
+}
+
+let savePlay;
+let audios = [];
+let currentIndex = 0;
+let username = "";
+let playlists = {};
+let currentPlaylist = "Main";
+
+const API_KEY = "$2a$10$0GmpdTEqd2ZaL6MGAdaZluaqaGoVgHAiKixWXMAig0J6pQXHSIdVa";
+const BIN_ID = "67da9c258561e97a50ef14c7";
 
 window.onload = async function () {
     let elements = document.getElementsByTagName("my-elem");
@@ -13,32 +39,13 @@ window.onload = async function () {
     }
 };
 
-
 const inp = document.getElementById("fInp");
 const delbut = document.getElementById("delBut");
 const playlistSelect = document.getElementById("playlistSelect");
-const name =document.getElementById("name");
-const delname =document.getElementById("delname");
+const name = document.getElementById("name");
+const delname = document.getElementById("delname");
 
-let audios = [];
-let currentIndex = 0;
-let username = "";
-let playlists = {};
-let currentPlaylist = "Main";
-
-const API_KEY = "$2a$10$0GmpdTEqd2ZaL6MGAdaZluaqaGoVgHAiKixWXMAig0J6pQXHSIdVa";
-const BIN_ID = "67da9c258561e97a50ef14c7";
-// Сохранение текущего плейлиста
-function savePlaylist() {
-    if (!username) {
-        console.warn("Сначала введите ник!");
-        return;
-    }
-
-    playlists[currentPlaylist] = audios.map(audio => audio.src);
-    saveAllPlaylists();
-    console.log(`Плейлист "${currentPlaylist}" сохранен.`);
-}
+// Функция добавления элемента управления
 function connectedCallback(a) {
     let inputId = a.getAttribute("iID") || "";
     let inputType = a.getAttribute("type") || "text";
@@ -62,7 +69,7 @@ function connectedCallback(a) {
     }
 }
 
-// Устанавливаем ник пользователя и загружаем плейлисты
+// Устанавливаем ник пользователя
 async function setUsername() {
     username = document.getElementById("username").value.trim();
     if (username) {
@@ -74,26 +81,38 @@ async function setUsername() {
 }
 
 // Добавление трека
-function addTrack() {
+async function addTrack() {
     let inp = document.getElementById("fInp");
-    let nameinp=name.value;
-    if (inp.value && nameinp) {
-        let newAudio = new Audio(inp.value);
-        let ind = nameinp;}
-    else if (inp.value){
-        let newAudio=new Audio(inp.value);
-    }else if(naminp){
-     
-}
-    
+    let nameinp = name.value.trim();
+
+    let audioUrl = inp.value.trim(); // Прямая ссылка, если введена
+    let ind = audios.length; // Уникальный индекс нового трека
+
+    if (!audioUrl && nameinp) {
+        console.log(`Ищем MP3 по названию: ${nameinp}`);
+        audioUrl = await searchMP3(nameinp);
+
+        if (!audioUrl) {
+            console.warn("MP3 файл не найден!");
+            return;
+        }
+    }
+
+    if (audioUrl) {
+        let newAudio = new Audio(audioUrl);
         newAudio.addEventListener("ended", playNext);
-    audios[ind]=newAudio;
-    savePlaylist();
-    console.log("Добавлено:", inp.value);
-        inp.value = "";
+
+        audios[ind] = newAudio;
+        savePlaylist();
+        console.log("Добавлено:", audioUrl);
+
+        inp.value = ""; // Очищаем поле ввода
+    } else {
+        console.warn("Введите URL или название песни!");
+    }
 }
 
-// Удаление трека по индексу (начиная с 1)
+// Удаление трека
 function removeTrack() {
     let index = parseInt(document.getElementById("idInp").value, 10) - 1;
     if (isNaN(index) || index < 0 || index >= audios.length) {
@@ -194,7 +213,7 @@ function updatePlaylistSelect() {
     playlistSelect.value = currentPlaylist;
 }
 
-// Сохранение всех плейлистов пользователя
+// Сохранение всех плейлистов
 async function saveAllPlaylists() {
     if (!username) {
         console.warn("Сначала введите ник!");
@@ -204,11 +223,10 @@ async function saveAllPlaylists() {
     let allPlaylists = await loadAllPlaylists();
     
     if (!allPlaylists || typeof allPlaylists !== "object") {
-        allPlaylists = {}; // Создаем новый объект, если данные отсутствуют или повреждены
+        allPlaylists = {}; // Создаем новый объект, если данных нет
     }
 
-    allPlaylists[username] = playlists; // Обновляем только данные текущего пользователя
-    console.log("Перед сохранением:", JSON.stringify(allPlaylists, null, 2));
+    allPlaylists[username] = playlists;
 
     fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: "PUT",
@@ -220,24 +238,6 @@ async function saveAllPlaylists() {
     })
     .then(() => console.log("Все плейлисты сохранены"))
     .catch(err => console.error("Ошибка сохранения:", err));
-}
-
-// Загрузка всех плейлистов пользователя
-async function loadUserPlaylists() {
-    let allPlaylists = await loadAllPlaylists();
-    playlists = allPlaylists[username] || { Main: [] };
-    updatePlaylistSelect();
-    changePlaylist();
-}
-
-// Загрузка всех плейлистов с сервера
-async function loadAllPlaylists() {
-    return fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-        headers: { "X-Master-Key": API_KEY }
-    })
-    .then(res => res.json())
-    .then(data => data.record || {})
-    .catch(() => ({}));
 }
 
 // Сброс всех треков
