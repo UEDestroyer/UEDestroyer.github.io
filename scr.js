@@ -17,6 +17,8 @@ window.onload = async function () {
 const inp = document.getElementById("fInp");
 const delbut = document.getElementById("delBut");
 const playlistSelect = document.getElementById("playlistSelect");
+const name =document.getElementById("name");
+const delname =document.getElementById("delname");
 
 let audios = [];
 let currentIndex = 0;
@@ -74,16 +76,21 @@ async function setUsername() {
 // Добавление трека
 function addTrack() {
     let inp = document.getElementById("fInp");
-    if (inp.value) {
+    let nameinp=name.value;
+    if (inp.value && nameinp) {
         let newAudio = new Audio(inp.value);
+        let ind = nameinp;}
+    else if (inp.value){
+        let newAudio=new Audio(inp.value);
+    }else if(naminp){
+     
+}
+    
         newAudio.addEventListener("ended", playNext);
-        audios.push(newAudio);
-        savePlaylist();
-        console.log("Добавлено:", inp.value);
+    audios[ind]=newAudio;
+    savePlaylist();
+    console.log("Добавлено:", inp.value);
         inp.value = "";
-    } else {
-        console.warn("Введите ссылку на MP3!");
-    }
 }
 
 // Удаление трека по индексу (начиная с 1)
