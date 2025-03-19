@@ -25,7 +25,7 @@ let playlists = {};
 let currentPlaylist = "Main";
 
 const API_KEY = "$2a$10$0GmpdTEqd2ZaL6MGAdaZluaqaGoVgHAiKixWXMAig0J6pQXHSIdVa";
-const BIN_ID = "67d9a2bfce7767792747b9c9";
+const BIN_ID = "67da9c258561e97a50ef14c7";
 // Сохранение текущего плейлиста
 function savePlaylist() {
     if (!username) {
