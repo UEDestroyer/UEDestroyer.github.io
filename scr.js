@@ -1,3 +1,6 @@
+let savePlay
+
+
 window.onload = async function () {
     let elements = document.getElementsByTagName("my-elem");
     Array.from(elements).forEach(b => connectedCallback(b));
@@ -9,6 +12,7 @@ window.onload = async function () {
         await loadUserPlaylists();
     }
 };
+
 
 const inp = document.getElementById("fInp");
 const delbut = document.getElementById("delBut");
@@ -64,7 +68,7 @@ function addTrack() {
         let newAudio = new Audio(inp.value);
         newAudio.addEventListener("ended", playNext);
         audios.push(newAudio);
-        savePlaylist();
+        saveAllPlaylist();
         console.log("Добавлено:", inp.value);
         inp.value = "";
     } else {
