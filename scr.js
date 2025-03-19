@@ -187,6 +187,7 @@ async function saveAllPlaylists() {
     }
 
     allPlaylists[username] = playlists; // Обновляем только данные текущего пользователя
+    console.log("Перед сохранением:", JSON.stringify(allPlaylists, null, 2));
 
     fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: "PUT",
