@@ -26,7 +26,17 @@ let currentPlaylist = "Main";
 
 const API_KEY = "$2a$10$0GmpdTEqd2ZaL6MGAdaZluaqaGoVgHAiKixWXMAig0J6pQXHSIdVa";
 const BIN_ID = "67d9a2bfce7767792747b9c9";
+// Сохранение текущего плейлиста
+function savePlaylist() {
+    if (!username) {
+        console.warn("Сначала введите ник!");
+        return;
+    }
 
+    playlists[currentPlaylist] = audios.map(audio => audio.src);
+    saveAllPlaylists();
+    console.log(`Плейлист "${currentPlaylist}" сохранен.`);
+}
 function connectedCallback(a) {
     let inputId = a.getAttribute("iID") || "";
     let inputType = a.getAttribute("type") || "text";
@@ -68,7 +78,7 @@ function addTrack() {
         let newAudio = new Audio(inp.value);
         newAudio.addEventListener("ended", playNext);
         audios.push(newAudio);
-        saveAllPlaylist();
+        savePlaylist();
         console.log("Добавлено:", inp.value);
         inp.value = "";
     } else {
