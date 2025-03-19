@@ -219,3 +219,5 @@ function resetAllTracks() {
     currentIndex = 0;
     console.log("Все треки сброшены.");
 }
+
+window.onload();
