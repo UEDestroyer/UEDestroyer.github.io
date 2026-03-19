@@ -62,51 +62,41 @@
 
 <script>
     // --- НАСТРОЙКИ ---
-    const API_KEY = 'HUI'; // Начинается с ptlc_
-    const SERVER_ID = 'HUI'; // Можно найти в URL панели (8 знаков)
-    const PANEL_URL = 'https://panel.magmanode.com';
-    const SECRET_PASS = 'dagaTop';
+async function startServer() {
+    const inputPass = document.getElementById('passwordInput').value;
+    const statusDiv = document.getElementById('status');
 
-    async function startServer() {
-        const inputPass = document.getElementById('passwordInput').value;
-        const statusDiv = document.getElementById('status');
+    // ССЫЛКА ИЗ ПАНЕЛИ RENDER (вставь свою!)
+    const RENDER_URL = 'https://magmanode.onrender.com'; 
 
-        // 1. Проверка локального пароля
-        if (inputPass !== SECRET_PASS) {
+    statusDiv.style.color = '#ffeb3b';
+    statusDiv.innerText = 'Просыпаюсь... (на бесплатном тарифе это займет 30 сек)';
+
+    try {
+        const response = await fetch(`${RENDER_URL}/start-my-server`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: inputPass })
+        });
+
+        if (response.status === 204) {
+            statusDiv.style.color = '#4CAF50';
+            statusDiv.innerText = 'Успех! Сервер MagmaNode запускается.';
+        } else if (response.status === 403) {
             statusDiv.style.color = '#ff4d4d';
-            statusDiv.innerText = 'Неверный пароль доступа!';
-            return;
-        }
-
-        statusDiv.style.color = '#ffeb3b';
-        statusDiv.innerText = 'Отправка команды...';
-
-        try {
-            // 2. Запрос к API Pterodactyl (MagmaNode)
-            const response = await fetch(`${PROXY_URL}${PANEL_URL}/api/client/servers/${SERVER_ID}/power`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${API_KEY}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ signal: 'start' })
-            });
-
-            if (response.ok) {
-                statusDiv.style.color = '#4CAF50';
-                statusDiv.innerText = 'Сервер запускается!';
-            } else {
-                const errorData = await response.json();
-                statusDiv.style.color = '#ff4d4d';
-                statusDiv.innerText = 'Ошибка API: ' + (errorData.errors ? errorData.errors[0].detail : response.statusText);
-            }
-        } catch (error) {
+            statusDiv.innerText = 'Неверный пароль (dagaTop)!';
+        } else {
             statusDiv.style.color = '#ff4d4d';
-            statusDiv.innerText = 'Ошибка сети или CORS';
-            console.error(error);
+            statusDiv.innerText = 'Ошибка бэкенда: ' + response.status;
         }
+    } catch (error) {
+        statusDiv.style.color = '#ff4d4d';
+        statusDiv.innerText = 'Бэкенд еще спит, подожди немного и нажми еще раз.';
+        console.error(error);
     }
+}
 </script>
 
 </body>
