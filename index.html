@@ -2,34 +2,112 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>MP3 Плеер</title>
-    <link href="style.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagmaNode Control</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #2d2d2d;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 300px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #status {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-    <label for="username">Введите имя пользователя:</label>
-    <input type="text" id="username">
-    <button onclick="setUsername()">Установить</button>
-    <br><br>
 
-    <label for="playlistSelect">Выберите плейлист:</label>
-    <select id="playlistSelect" onchange="changePlaylist()">
-        <option value="Main">Main</option>
-    </select>
-    <button onclick="createPlaylist()">Создать новый</button>
-    <button onclick="deletePlaylist()">Удалить выбранный</button>
-    <br><br>
-    <input id="name" placeholder="Введите название"></input>
-    <my-elem iId="fInp" bId="addBut">Добавить трек</my-elem><br><br>
-    <input id="delname" placeholder="Введите название"></input>
-    <my-elem iId="idInp" type="number" bId="delBut">Удалить трек</my-elem><br><br>
+<div class="container">
+    <h2>Управление сервером</h2>
+    <input type="password" id="passwordInput" placeholder="Введите пароль">
+    <button onclick="startServer()">START SERVER</button>
+    <div id="status"></div>
+</div>
 
-    <button onclick="playMusic()">Играть</button>
-    <button onclick="continMus()">Продолжить</button>
-    <button onclick="pauseMusic()">Пауза</button>
-    <button onclick="playNext()">Следующий</button>
-    <button onclick="playBef()">Предыдущий</button>
-    <button onclick="clearPlaylist()">Очистить плейлист</button>
+<script>
+    // --- НАСТРОЙКИ ---
+    const API_KEY = 'ptlc_TizGviaLvuY440cv5TWpDwvfYEfUHHBQse6TLng3oTq'; // Начинается с ptlc_
+    const SERVER_ID = '3dac1197'; // Можно найти в URL панели (8 знаков)
+    const PANEL_URL = 'https://panel.magmanode.com';
+    const SECRET_PASS = 'dagaTop';
 
-    <script src="scr.js"></script>
+    async function startServer() {
+        const inputPass = document.getElementById('passwordInput').value;
+        const statusDiv = document.getElementById('status');
+
+        // 1. Проверка локального пароля
+        if (inputPass !== SECRET_PASS) {
+            statusDiv.style.color = '#ff4d4d';
+            statusDiv.innerText = 'Неверный пароль доступа!';
+            return;
+        }
+
+        statusDiv.style.color = '#ffeb3b';
+        statusDiv.innerText = 'Отправка команды...';
+
+        try {
+            // 2. Запрос к API Pterodactyl (MagmaNode)
+            const response = await fetch(`${PANEL_URL}/api/client/servers/${SERVER_ID}/power`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ signal: 'start' })
+            });
+
+            if (response.ok) {
+                statusDiv.style.color = '#4CAF50';
+                statusDiv.innerText = 'Сервер запускается!';
+            } else {
+                const errorData = await response.json();
+                statusDiv.style.color = '#ff4d4d';
+                statusDiv.innerText = 'Ошибка API: ' + (errorData.errors ? errorData.errors[0].detail : response.statusText);
+            }
+        } catch (error) {
+            statusDiv.style.color = '#ff4d4d';
+            statusDiv.innerText = 'Ошибка сети или CORS';
+            console.error(error);
+        }
+    }
+</script>
+
 </body>
 </html>
