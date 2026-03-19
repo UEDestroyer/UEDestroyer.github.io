@@ -61,16 +61,20 @@
 </div>
 
 <script>
-    // --- НАСТРОЙКИ ---
 async function startServer() {
     const inputPass = document.getElementById('passwordInput').value;
     const statusDiv = document.getElementById('status');
 
-    // ССЫЛКА ИЗ ПАНЕЛИ RENDER (вставь свою!)
+    // ЗАМЕНИ НА СВОЮ ССЫЛКУ ИЗ ПАНЕЛИ RENDER (она должна быть в кавычках!)
     const RENDER_URL = 'https://magmanode.onrender.com'; 
 
+    if (!inputPass) {
+        statusDiv.innerText = 'Введите пароль!';
+        return;
+    }
+
     statusDiv.style.color = '#ffeb3b';
-    statusDiv.innerText = 'Просыпаюсь... (на бесплатном тарифе это займет 30 сек)';
+    statusDiv.innerText = 'Связываюсь с бэкендом...';
 
     try {
         const response = await fetch(`${RENDER_URL}/start-my-server`, {
@@ -81,20 +85,22 @@ async function startServer() {
             body: JSON.stringify({ password: inputPass })
         });
 
-        if (response.status === 204) {
+        // Обработка ответов от твоего Node.js сервера
+        if (response.status === 204 || response.ok) {
             statusDiv.style.color = '#4CAF50';
-            statusDiv.innerText = 'Успех! Сервер MagmaNode запускается.';
+            statusDiv.innerText = 'Сервер успешно запускается!';
         } else if (response.status === 403) {
             statusDiv.style.color = '#ff4d4d';
-            statusDiv.innerText = 'Неверный пароль (dagaTop)!';
+            statusDiv.innerText = 'Ошибка: Неверный пароль dagaTop';
         } else {
             statusDiv.style.color = '#ff4d4d';
             statusDiv.innerText = 'Ошибка бэкенда: ' + response.status;
         }
     } catch (error) {
         statusDiv.style.color = '#ff4d4d';
-        statusDiv.innerText = 'Бэкенд еще спит, подожди немного и нажми еще раз.';
-        console.error(error);
+        // На бесплатном тарифе Render сервер спит, если его не трогали 15 минут
+        statusDiv.innerText = 'Бэкенд просыпается... Подождите 30 секунд и нажмите еще раз.';
+        console.error('Ошибка:', error);
     }
 }
 </script>
