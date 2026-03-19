@@ -83,7 +83,7 @@
 
         try {
             // 2. Запрос к API Pterodactyl (MagmaNode)
-            const response = await fetch(`${PANEL_URL}/api/client/servers/${SERVER_ID}/power`, {
+            const response = await fetch(`${PROXY_URL}${PANEL_URL}/api/client/servers/${SERVER_ID}/power`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${API_KEY}`,
